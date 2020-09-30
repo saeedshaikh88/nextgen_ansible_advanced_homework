@@ -1,20 +1,31 @@
+- hosts: localhost
+  tasks:
+  - name: copy repo to 3 tier setup
+    shell: /bin/scp -o StrictHostKeyChecking=no -i /root/.ssh/openstack.pem /root/nextgen_ansible_advanced_homework/roles/app-tier/templates/index.html.j2 ec2-user@bastion.{{TIER_GUID}}.example.opentlc.com:/tmp
 - hosts: tag_AnsibleGroup_bastions
-  gather_facts: true
+  gather_facts: false
   become: true
   tasks:
-  - name: Install required packages 
-    yum: 
+  - name: Install required packages
+    yum:
      name: "{{item}}"
-     state: latest 
-    loop: 
-      - python 
-      - python-pip 
-      - python-devel 
+     state: latest
+    loop:
+      - python
+      - python-pip
+      - python-devel
       - gcc
   - name: Install tower-cli
     pip:
      name: ansible-tower-cli
      state: latest
+  - name: Install openstack library
+    command: pip3 install ansible openstacksdk -U
+
+  - name: Set config host
+    shell: |
+      tower-cli config --scope=user host tower1.{{tower_GUID}}.example.opentlc.com ; tower-cli config --scope=user username admin; tower-cli config --scope=user password r3dh4t1!; tower-cli config --scope=user verify_ssl False
+
   - name: List key files
     shell: (cd /root/.ssh; find . -maxdepth 1 -type f -iname '*key.pem')| cut -d'/' -f2
     register: file_to_copy
@@ -28,8 +39,6 @@
       tower_username: admin
       tower_password: r3dh4t1!
       tower_verify_ssl: no
-      ssh_key_data: "/root/.ssh/{{ file_to_copy.stdout }}"
-      username: ec2-user
   - name: Update Prod Job template
     tower_job_template:
       name: "09_3 tier app on Prod"
@@ -55,4 +64,9 @@
       playbook: site-smoketest-aws.yml
       project: "00_Homework Assignment"
 
-    
+  - name: copy repo from workstation to fronted
+    shell: /bin/scp -o StrictHostKeyChecking=no -i "/root/.ssh/{{TIER_GUID}}key.pem" /tmp/index.html.j2   ec2-user@frontend1:/tmp/
+  - name: run commands on frontend
+    shell: ssh -v -i "/root/.ssh/{{TIER_GUID}}key.pem" ec2-user@frontend1 "sudo yum install httpd -y ;sudo cp /tmp/index.html.j2 /var/www/html/index.html ; sudo systemctl enable httpd; sudo systemctl start httpd"
+ 
+  

@@ -1,6 +1,31 @@
 - hosts: localhost
-  connection: local
-  become: no
-  gather_facts: true
+  tasks:
+  - name: copy repo to workstation
+    shell: /bin/scp -o StrictHostKeyChecking=no -i /root/.ssh/openstack.pem /etc/yum.repos.d/open_ans-tower-lab.repo /root/nextgen_ansible_advanced_homework/roles/app-tier/templates/index.html.j2 cloud-user@workstation-${OSP_GUID}.${OSP_DOMAIN}:/tmp
+
+
+- hosts: isolated_group_osp
+  become: yes
+  gather_facts: false
   roles:
    - osp-servers
+
+- hosts: isolated_group_osp
+  gather_facts: false
+  become: yes
+  tasks:
+  - name: OpenStack servers
+    os_server_info:
+     cloud: openstack
+     server: 'frontend'
+    register: openstack_info
+
+  - name: copy repo from workstation to fronted
+    shell: /bin/scp -o StrictHostKeyChecking=no -i /root/.ssh/test_id_rsa /tmp/{open_ans-tower-lab.repo,index.html.j2}   cloud-user@{{item.public_v4}}:/tmp/
+    with_items:
+      - "{{ openstack_info.openstack_servers }}"
+
+  - name: run commands on frontend
+    shell: ssh -v -i /root/.ssh/test_id_rsa cloud-user@{{item.public_v4}} "sudo cp /tmp/open_ans-tower-lab.repo /etc/yum.repos.d/ ; sudo yum install httpd -y ; sudo cp /tmp/index.html.j2 /var/www/html/index.html; sudo systemctl enable httpd; sudo systemctl start httpd"
+    with_items:
+      - "{{ openstack_info.openstack_servers }}" 

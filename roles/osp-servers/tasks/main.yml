@@ -3,7 +3,7 @@
     cloud: openstack
     name: app1
     image: rhel-guest
-    key_name: ansible_ssh_key
+    key_name: ansible_ssh
     flavor: m1.medium
     security_groups: apps
     delete_fip: yes
@@ -15,15 +15,13 @@
       #!/bin/bash
       curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
       cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
-      curl -o /var/tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
-      cp /var/tmp/internal.repo /etc/yum.repos.d/internal.repo
 
 - name: Create instances
   os_server:
     cloud: openstack
     name: app2
     image: rhel-guest
-    key_name: ansible_ssh_key
+    key_name: ansible_ssh
     flavor: m1.medium
     security_groups: apps
     delete_fip: yes
@@ -35,15 +33,13 @@
       #!/bin/bash
       curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
       cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
-      curl -o /var/tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
-      cp /var/tmp/internal.repo /etc/yum.repos.d/internal.repo
 
 - name: Create instances
   os_server:
     cloud: openstack
     name: db
     image: rhel-guest
-    key_name: ansible_ssh_key
+    key_name: ansible_ssh
     flavor: m1.medium
     security_groups: db
     delete_fip: yes
@@ -55,15 +51,13 @@
       #!/bin/bash
       curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
       cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
-      curl -o /var/tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
-      cp /var/tmp/internal.repo /etc/yum.repos.d/internal.repo
 
 - name: Create instances
   os_server:
     cloud: openstack
     name: frontend
     image: rhel-guest
-    key_name: ansible_ssh_key
+    key_name: ansible_ssh
     flavor: m1.medium
     security_groups: frontend
     delete_fip: yes
@@ -75,8 +69,6 @@
       #!/bin/bash
       curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
       cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
-      curl -o /var/tmp/internal.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
-      cp /var/tmp/internal.repo /etc/yum.repos.d/internal.repo
 
 - name: Add floating IP to instance
   os_floating_ip:
