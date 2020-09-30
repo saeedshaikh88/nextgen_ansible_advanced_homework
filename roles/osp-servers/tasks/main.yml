@@ -3,7 +3,7 @@
     cloud: openstack
     name: app1
     image: rhel-guest
-    key_name: ansible_ssh_key
+    key_name: ansible_ssh
     flavor: m1.medium
     security_groups: apps
     delete_fip: yes
@@ -23,7 +23,7 @@
     cloud: openstack
     name: app2
     image: rhel-guest
-    key_name: ansible_ssh_key
+    key_name: ansible_ssh
     flavor: m1.medium
     security_groups: apps
     delete_fip: yes
@@ -43,7 +43,7 @@
     cloud: openstack
     name: db
     image: rhel-guest
-    key_name: ansible_ssh_key
+    key_name: ansible_ssh
     flavor: m1.medium
     security_groups: db
     delete_fip: yes
@@ -63,7 +63,7 @@
     cloud: openstack
     name: frontend
     image: rhel-guest
-    key_name: ansible_ssh_key
+    key_name: ansible_ssh
     flavor: m1.medium
     security_groups: frontend
     delete_fip: yes
